@@ -1,0 +1,57 @@
+# ==================== 通用 ====================
+# 操作系统
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*.bak
+
+# 日志
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# ==================== 后端 (NestJS) ====================
+backend/node_modules/
+backend/dist/
+backend/coverage/
+backend/.nyc_output/
+backend/.env
+backend/.env.local
+
+# ==================== Docker ====================
+# Docker 数据卷（如果有本地挂载）
+data/
+mysql_data/
+
+# ==================== 其他 ====================
+# 临时文件
+*.tmp
+*.temp
+.cache/
+
+# 测试覆盖率
+coverage/
+.nyc_output/
+
+# 构建产物
+build/
+out/

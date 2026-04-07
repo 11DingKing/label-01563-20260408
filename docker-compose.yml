@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # MySQL 数据库
+  mysql:
+    image: mysql:8.0
+    container_name: nestjs-auth-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456
+      MYSQL_DATABASE: nestjs_auth
+      MYSQL_USER: nestjs
+      MYSQL_PASSWORD: nestjs123456
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/sql/schema.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123456"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # NestJS 后端 API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nestjs-auth-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: nestjs
+      DB_PASSWORD: nestjs123456
+      DB_DATABASE: nestjs_auth
+      DB_SYNC: "false"
+      DB_LOGGING: "false"
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production-2024
+      JWT_EXPIRES_IN: 7d
+      LOG_DIR: /app/logs
+      LOG_LEVEL: info
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./logs:/app/logs    # 日志持久化到宿主机
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge
