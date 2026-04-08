@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { TransformInterceptor } from '../src/common/interceptors/transform.interceptor';
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication, ValidationPipe } from "@nestjs/common";
+import * as request from "supertest";
+import { AppModule } from "../src/app.module";
+import { TransformInterceptor } from "../src/common/interceptors/transform.interceptor";
 
-describe('App (e2e)', () => {
+describe("App (e2e)", () => {
   let app: INestApplication;
   let accessToken: string;
   let adminToken: string;
@@ -12,7 +12,7 @@ describe('App (e2e)', () => {
 
   const testUser = {
     username: `e2etest_${Date.now()}`,
-    password: 'testpassword123',
+    password: "testpassword123",
     email: `e2etest_${Date.now()}@example.com`,
   };
 
@@ -22,8 +22,8 @@ describe('App (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    
-    app.setGlobalPrefix('api');
+
+    app.setGlobalPrefix("api");
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
@@ -41,11 +41,11 @@ describe('App (e2e)', () => {
   });
 
   // ==================== 认证模块测试 ====================
-  describe('AuthController (e2e)', () => {
-    describe('POST /api/auth/register', () => {
-      it('should register a new user', () => {
+  describe("AuthController (e2e)", () => {
+    describe("POST /api/auth/register", () => {
+      it("should register a new user", () => {
         return request(app.getHttpServer())
-          .post('/api/auth/register')
+          .post("/api/auth/register")
           .send(testUser)
           .expect(201)
           .expect((res) => {
@@ -56,51 +56,51 @@ describe('App (e2e)', () => {
           });
       });
 
-      it('should fail when username is too short', () => {
+      it("should fail when username is too short", () => {
         return request(app.getHttpServer())
-          .post('/api/auth/register')
+          .post("/api/auth/register")
           .send({
-            username: 'ab',
-            password: 'password123',
-            email: 'test@example.com',
+            username: "ab",
+            password: "password123",
+            email: "test@example.com",
           })
           .expect(400);
       });
 
-      it('should fail when password is too short', () => {
+      it("should fail when password is too short", () => {
         return request(app.getHttpServer())
-          .post('/api/auth/register')
+          .post("/api/auth/register")
           .send({
-            username: 'validuser',
-            password: '123',
-            email: 'test@example.com',
+            username: "validuser",
+            password: "123",
+            email: "test@example.com",
           })
           .expect(400);
       });
 
-      it('should fail when email is invalid', () => {
+      it("should fail when email is invalid", () => {
         return request(app.getHttpServer())
-          .post('/api/auth/register')
+          .post("/api/auth/register")
           .send({
-            username: 'validuser',
-            password: 'password123',
-            email: 'invalid-email',
+            username: "validuser",
+            password: "password123",
+            email: "invalid-email",
           })
           .expect(400);
       });
 
-      it('should fail when username already exists', () => {
+      it("should fail when username already exists", () => {
         return request(app.getHttpServer())
-          .post('/api/auth/register')
+          .post("/api/auth/register")
           .send(testUser)
           .expect(409);
       });
     });
 
-    describe('POST /api/auth/login', () => {
-      it('should login successfully', () => {
+    describe("POST /api/auth/login", () => {
+      it("should login successfully", () => {
         return request(app.getHttpServer())
-          .post('/api/auth/login')
+          .post("/api/auth/login")
           .send({
             username: testUser.username,
             password: testUser.password,
@@ -115,29 +115,29 @@ describe('App (e2e)', () => {
           });
       });
 
-      it('should fail with wrong password', () => {
+      it("should fail with wrong password", () => {
         return request(app.getHttpServer())
-          .post('/api/auth/login')
+          .post("/api/auth/login")
           .send({
             username: testUser.username,
-            password: 'wrongpassword',
+            password: "wrongpassword",
           })
           .expect(401);
       });
 
-      it('should fail with non-existent user', () => {
+      it("should fail with non-existent user", () => {
         return request(app.getHttpServer())
-          .post('/api/auth/login')
+          .post("/api/auth/login")
           .send({
-            username: 'nonexistentuser',
-            password: 'password123',
+            username: "nonexistentuser",
+            password: "password123",
           })
           .expect(401);
       });
 
-      it('should fail with missing fields', () => {
+      it("should fail with missing fields", () => {
         return request(app.getHttpServer())
-          .post('/api/auth/login')
+          .post("/api/auth/login")
           .send({
             username: testUser.username,
           })
@@ -145,11 +145,11 @@ describe('App (e2e)', () => {
       });
     });
 
-    describe('GET /api/auth/profile', () => {
-      it('should get user profile', () => {
+    describe("GET /api/auth/profile", () => {
+      it("should get user profile", () => {
         return request(app.getHttpServer())
-          .get('/api/auth/profile')
-          .set('Authorization', `Bearer ${accessToken}`)
+          .get("/api/auth/profile")
+          .set("Authorization", `Bearer ${accessToken}`)
           .expect(200)
           .expect((res) => {
             expect(res.body.code).toBe(0);
@@ -158,115 +158,115 @@ describe('App (e2e)', () => {
           });
       });
 
-      it('should fail without token', () => {
+      it("should fail without token", () => {
         return request(app.getHttpServer())
-          .get('/api/auth/profile')
+          .get("/api/auth/profile")
           .expect(401);
       });
 
-      it('should fail with invalid token', () => {
+      it("should fail with invalid token", () => {
         return request(app.getHttpServer())
-          .get('/api/auth/profile')
-          .set('Authorization', 'Bearer invalid-token')
+          .get("/api/auth/profile")
+          .set("Authorization", "Bearer invalid-token")
           .expect(401);
       });
 
-      it('should fail with malformed authorization header', () => {
+      it("should fail with malformed authorization header", () => {
         return request(app.getHttpServer())
-          .get('/api/auth/profile')
-          .set('Authorization', 'InvalidFormat')
+          .get("/api/auth/profile")
+          .set("Authorization", "InvalidFormat")
           .expect(401);
       });
     });
 
-    describe('PUT /api/auth/profile', () => {
-      it('should update user nickname', () => {
+    describe("PUT /api/auth/profile", () => {
+      it("should update user nickname", () => {
         return request(app.getHttpServer())
-          .put('/api/auth/profile')
-          .set('Authorization', `Bearer ${accessToken}`)
-          .send({ nickname: 'Updated Nickname' })
+          .put("/api/auth/profile")
+          .set("Authorization", `Bearer ${accessToken}`)
+          .send({ nickname: "Updated Nickname" })
           .expect(200)
           .expect((res) => {
             expect(res.body.code).toBe(0);
-            expect(res.body.data.nickname).toBe('Updated Nickname');
+            expect(res.body.data.nickname).toBe("Updated Nickname");
           });
       });
 
-      it('should update user avatar', () => {
+      it("should update user avatar", () => {
         return request(app.getHttpServer())
-          .put('/api/auth/profile')
-          .set('Authorization', `Bearer ${accessToken}`)
-          .send({ avatar: 'https://example.com/avatar.png' })
+          .put("/api/auth/profile")
+          .set("Authorization", `Bearer ${accessToken}`)
+          .send({ avatar: "https://example.com/avatar.png" })
           .expect(200)
           .expect((res) => {
             expect(res.body.code).toBe(0);
-            expect(res.body.data.avatar).toBe('https://example.com/avatar.png');
+            expect(res.body.data.avatar).toBe("https://example.com/avatar.png");
           });
       });
     });
 
-    describe('PUT /api/auth/password', () => {
-      it('should change password successfully', () => {
+    describe("PUT /api/auth/password", () => {
+      it("should change password successfully", () => {
         return request(app.getHttpServer())
-          .put('/api/auth/password')
-          .set('Authorization', `Bearer ${accessToken}`)
+          .put("/api/auth/password")
+          .set("Authorization", `Bearer ${accessToken}`)
           .send({
             oldPassword: testUser.password,
-            newPassword: 'newpassword123',
+            newPassword: "newpassword123",
           })
           .expect(200)
           .expect((res) => {
             expect(res.body.code).toBe(0);
-            expect(res.body.data.message).toBe('密码修改成功');
+            expect(res.body.data.message).toBe("密码修改成功");
           });
       });
 
-      it('should fail with wrong old password', () => {
+      it("should fail with wrong old password", () => {
         return request(app.getHttpServer())
-          .put('/api/auth/password')
-          .set('Authorization', `Bearer ${accessToken}`)
+          .put("/api/auth/password")
+          .set("Authorization", `Bearer ${accessToken}`)
           .send({
-            oldPassword: 'wrongoldpassword',
-            newPassword: 'newpassword123',
+            oldPassword: "wrongoldpassword",
+            newPassword: "newpassword123",
           })
           .expect(400);
       });
 
-      it('should fail with short new password', () => {
+      it("should fail with short new password", () => {
         return request(app.getHttpServer())
-          .put('/api/auth/password')
-          .set('Authorization', `Bearer ${accessToken}`)
+          .put("/api/auth/password")
+          .set("Authorization", `Bearer ${accessToken}`)
           .send({
-            oldPassword: 'newpassword123',
-            newPassword: '123',
+            oldPassword: "newpassword123",
+            newPassword: "123",
           })
           .expect(400);
       });
     });
 
-    describe('POST /api/auth/logout', () => {
-      it('should logout successfully', () => {
+    describe("POST /api/auth/logout", () => {
+      it("should logout successfully", () => {
         return request(app.getHttpServer())
-          .post('/api/auth/logout')
-          .set('Authorization', `Bearer ${accessToken}`)
+          .post("/api/auth/logout")
+          .set("Authorization", `Bearer ${accessToken}`)
           .expect(200)
           .expect((res) => {
             expect(res.body.code).toBe(0);
-            expect(res.body.data.message).toBe('退出登录成功');
+            expect(res.body.data.message).toBe("退出登录成功");
           });
       });
     });
   });
 
   // ==================== 用户管理模块测试（管理员） ====================
-  describe('UserController (e2e) - Admin operations', () => {
+  describe("UserController (e2e) - Admin operations", () => {
     beforeAll(async () => {
       // Login as admin
       const res = await request(app.getHttpServer())
-        .post('/api/auth/login')
+        .post("/api/auth/login")
         .send({
-          username: 'admin',
-          password: 'admin123',
+          username: "admin",
+          password: "admin123",
         });
 
       if (res.body.code === 0) {
@@ -274,16 +274,16 @@ describe('App (e2e)', () => {
       }
     });
 
-    describe('GET /api/users', () => {
-      it('should get user list (admin only)', async () => {
+    describe("GET /api/users", () => {
+      it("should get user list (admin only)", async () => {
         if (!adminToken) {
-          console.log('Skipping admin test - admin user not available');
+          console.log("Skipping admin test - admin user not available");
           return;
         }
 
         return request(app.getHttpServer())
-          .get('/api/users')
-          .set('Authorization', `Bearer ${adminToken}`)
+          .get("/api/users")
+          .set("Authorization", `Bearer ${adminToken}`)
           .query({ page: 1, pageSize: 10 })
           .expect(200)
           .expect((res) => {
@@ -295,13 +295,13 @@ describe('App (e2e)', () => {
           });
       });
 
-      it('should filter users by username', async () => {
+      it("should filter users by username", async () => {
         if (!adminToken) return;
 
         return request(app.getHttpServer())
-          .get('/api/users')
-          .set('Authorization', `Bearer ${adminToken}`)
-          .query({ page: 1, pageSize: 10, username: 'admin' })
+          .get("/api/users")
+          .set("Authorization", `Bearer ${adminToken}`)
+          .query({ page: 1, pageSize: 10, username: "admin" })
           .expect(200)
           .expect((res) => {
             expect(res.body.code).toBe(0);
@@ -309,33 +309,33 @@ describe('App (e2e)', () => {
           });
       });
 
-      it('should filter users by status', async () => {
+      it("should filter users by status", async () => {
         if (!adminToken) return;
 
         return request(app.getHttpServer())
-          .get('/api/users')
-          .set('Authorization', `Bearer ${adminToken}`)
+          .get("/api/users")
+          .set("Authorization", `Bearer ${adminToken}`)
           .query({ page: 1, pageSize: 10, status: 1 })
           .expect(200);
       });
     });
 
-    describe('POST /api/users', () => {
-      it('should create a new user (admin only)', async () => {
+    describe("POST /api/users", () => {
+      it("should create a new user (admin only)", async () => {
         if (!adminToken) {
-          console.log('Skipping admin test - admin user not available');
+          console.log("Skipping admin test - admin user not available");
           return;
         }
 
         const newUser = {
           username: `admintest_${Date.now()}`,
-          password: 'password123',
+          password: "password123",
           email: `admintest_${Date.now()}@example.com`,
         };
 
         return request(app.getHttpServer())
-          .post('/api/users')
-          .set('Authorization', `Bearer ${adminToken}`)
+          .post("/api/users")
+          .set("Authorization", `Bearer ${adminToken}`)
           .send(newUser)
           .expect(201)
           .expect((res) => {
@@ -346,31 +346,31 @@ describe('App (e2e)', () => {
           });
       });
 
-      it('should fail when creating user with existing username', async () => {
+      it("should fail when creating user with existing username", async () => {
         if (!adminToken) return;
 
         return request(app.getHttpServer())
-          .post('/api/users')
-          .set('Authorization', `Bearer ${adminToken}`)
+          .post("/api/users")
+          .set("Authorization", `Bearer ${adminToken}`)
           .send({
-            username: 'admin',
-            password: 'password123',
-            email: 'newemail@example.com',
+            username: "admin",
+            password: "password123",
+            email: "newemail@example.com",
           })
           .expect(409);
       });
     });
 
-    describe('GET /api/users/:id', () => {
-      it('should get user by id (admin only)', async () => {
+    describe("GET /api/users/:id", () => {
+      it("should get user by id (admin only)", async () => {
         if (!adminToken || !testUserId) {
-          console.log('Skipping admin test - prerequisites not met');
+          console.log("Skipping admin test - prerequisites not met");
           return;
         }
 
         return request(app.getHttpServer())
           .get(`/api/users/${testUserId}`)
-          .set('Authorization', `Bearer ${adminToken}`)
+          .set("Authorization", `Bearer ${adminToken}`)
           .expect(200)
           .expect((res) => {
             expect(res.body.code).toBe(0);
@@ -379,45 +379,45 @@ describe('App (e2e)', () => {
           });
       });
 
-      it('should return 404 for non-existent user', async () => {
+      it("should return 404 for non-existent user", async () => {
         if (!adminToken) return;
 
         return request(app.getHttpServer())
-          .get('/api/users/999999')
-          .set('Authorization', `Bearer ${adminToken}`)
+          .get("/api/users/999999")
+          .set("Authorization", `Bearer ${adminToken}`)
           .expect(404);
       });
     });
 
-    describe('PUT /api/users/:id', () => {
-      it('should update user (admin only)', async () => {
+    describe("PUT /api/users/:id", () => {
+      it("should update user (admin only)", async () => {
         if (!adminToken || !testUserId) {
-          console.log('Skipping admin test - prerequisites not met');
+          console.log("Skipping admin test - prerequisites not met");
           return;
         }
 
         return request(app.getHttpServer())
           .put(`/api/users/${testUserId}`)
-          .set('Authorization', `Bearer ${adminToken}`)
-          .send({ nickname: 'Admin Updated' })
+          .set("Authorization", `Bearer ${adminToken}`)
+          .send({ nickname: "Admin Updated" })
           .expect(200)
           .expect((res) => {
             expect(res.body.code).toBe(0);
-            expect(res.body.data.nickname).toBe('Admin Updated');
+            expect(res.body.data.nickname).toBe("Admin Updated");
           });
       });
     });
 
-    describe('PUT /api/users/:id/status', () => {
-      it('should disable user (admin only)', async () => {
+    describe("PUT /api/users/:id/status", () => {
+      it("should disable user (admin only)", async () => {
         if (!adminToken || !testUserId) {
-          console.log('Skipping admin test - prerequisites not met');
+          console.log("Skipping admin test - prerequisites not met");
           return;
         }
 
         return request(app.getHttpServer())
           .put(`/api/users/${testUserId}/status`)
-          .set('Authorization', `Bearer ${adminToken}`)
+          .set("Authorization", `Bearer ${adminToken}`)
           .send({ status: 0 })
           .expect(200)
           .expect((res) => {
@@ -426,12 +426,12 @@ describe('App (e2e)', () => {
           });
       });
 
-      it('should enable user (admin only)', async () => {
+      it("should enable user (admin only)", async () => {
         if (!adminToken || !testUserId) return;
 
         return request(app.getHttpServer())
           .put(`/api/users/${testUserId}/status`)
-          .set('Authorization', `Bearer ${adminToken}`)
+          .set("Authorization", `Bearer ${adminToken}`)
           .send({ status: 1 })
           .expect(200)
           .expect((res) => {
@@ -441,33 +441,33 @@ describe('App (e2e)', () => {
       });
     });
 
-    describe('DELETE /api/users/:id', () => {
-      it('should delete user (admin only)', async () => {
+    describe("DELETE /api/users/:id", () => {
+      it("should delete user (admin only)", async () => {
         if (!adminToken || !testUserId) {
-          console.log('Skipping admin test - prerequisites not met');
+          console.log("Skipping admin test - prerequisites not met");
           return;
         }
 
         return request(app.getHttpServer())
           .delete(`/api/users/${testUserId}`)
-          .set('Authorization', `Bearer ${adminToken}`)
+          .set("Authorization", `Bearer ${adminToken}`)
           .expect(200);
       });
     });
   });
 
   // ==================== 日志模块测试（管理员） ====================
-  describe('LogController (e2e) - Admin operations', () => {
-    describe('GET /api/logs', () => {
-      it('should get log list (admin only)', async () => {
+  describe("LogController (e2e) - Admin operations", () => {
+    describe("GET /api/logs", () => {
+      it("should get log list (admin only)", async () => {
         if (!adminToken) {
-          console.log('Skipping admin test - admin user not available');
+          console.log("Skipping admin test - admin user not available");
           return;
         }
 
         return request(app.getHttpServer())
-          .get('/api/logs')
-          .set('Authorization', `Bearer ${adminToken}`)
+          .get("/api/logs")
+          .set("Authorization", `Bearer ${adminToken}`)
           .query({ page: 1, pageSize: 10 })
           .expect(200)
           .expect((res) => {
@@ -478,69 +478,69 @@ describe('App (e2e)', () => {
           });
       });
 
-      it('should filter logs by username', async () => {
+      it("should filter logs by username", async () => {
         if (!adminToken) return;
 
         return request(app.getHttpServer())
-          .get('/api/logs')
-          .set('Authorization', `Bearer ${adminToken}`)
-          .query({ page: 1, pageSize: 10, username: 'admin' })
+          .get("/api/logs")
+          .set("Authorization", `Bearer ${adminToken}`)
+          .query({ page: 1, pageSize: 10, username: "admin" })
           .expect(200);
       });
 
-      it('should filter logs by module', async () => {
+      it("should filter logs by module", async () => {
         if (!adminToken) return;
 
         return request(app.getHttpServer())
-          .get('/api/logs')
-          .set('Authorization', `Bearer ${adminToken}`)
-          .query({ page: 1, pageSize: 10, module: 'auth' })
+          .get("/api/logs")
+          .set("Authorization", `Bearer ${adminToken}`)
+          .query({ page: 1, pageSize: 10, module: "auth" })
           .expect(200);
       });
 
-      it('should filter logs by status', async () => {
+      it("should filter logs by status", async () => {
         if (!adminToken) return;
 
         return request(app.getHttpServer())
-          .get('/api/logs')
-          .set('Authorization', `Bearer ${adminToken}`)
+          .get("/api/logs")
+          .set("Authorization", `Bearer ${adminToken}`)
           .query({ page: 1, pageSize: 10, status: 1 })
           .expect(200);
       });
 
-      it('should filter logs by date range', async () => {
+      it("should filter logs by date range", async () => {
         if (!adminToken) return;
 
-        const today = new Date().toISOString().split('T')[0];
-        
+        const today = new Date().toISOString().split("T")[0];
+
         return request(app.getHttpServer())
-          .get('/api/logs')
-          .set('Authorization', `Bearer ${adminToken}`)
-          .query({ 
-            page: 1, 
-            pageSize: 10, 
+          .get("/api/logs")
+          .set("Authorization", `Bearer ${adminToken}`)
+          .query({
+            page: 1,
+            pageSize: 10,
             startDate: today,
-            endDate: today 
+            endDate: today,
           })
           .expect(200);
       });
     });
 
-    describe('GET /api/logs/:id', () => {
-      it('should get log by id (admin only)', async () => {
+    describe("GET /api/logs/:id", () => {
+      it("should get log by id (admin only)", async () => {
         if (!adminToken) {
-          console.log('Skipping admin test - admin user not available');
+          console.log("Skipping admin test - admin user not available");
           return;
         }
 
         // First get a log to get its ID
         const logsRes = await request(app.getHttpServer())
-          .get('/api/logs')
-          .set('Authorization', `Bearer ${adminToken}`)
+          .get("/api/logs")
+          .set("Authorization", `Bearer ${adminToken}`)
           .query({ page: 1, pageSize: 1 });
 
         if (logsRes.body.data.data.length === 0) {
-          console.log('No logs available for testing');
+          console.log("No logs available for testing");
           return;
         }
 
@@ -548,7 +548,7 @@ describe('App (e2e)', () => {
 
         return request(app.getHttpServer())
           .get(`/api/logs/${logId}`)
-          .set('Authorization', `Bearer ${adminToken}`)
+          .set("Authorization", `Bearer ${adminToken}`)
           .expect(200)
           .expect((res) => {
             expect(res.body.code).toBe(0);
@@ -556,35 +556,35 @@ describe('App (e2e)', () => {
           });
       });
 
-      it('should return 404 for non-existent log', async () => {
+      it("should return 404 for non-existent log", async () => {
         if (!adminToken) return;
 
         return request(app.getHttpServer())
-          .get('/api/logs/999999')
-          .set('Authorization', `Bearer ${adminToken}`)
+          .get("/api/logs/999999")
+          .set("Authorization", `Bearer ${adminToken}`)
           .expect(404);
       });
     });
   });
 
   // ==================== 权限测试 ====================
-  describe('Permission Tests', () => {
+  describe("Permission Tests", () => {
     let normalUserToken: string;
 
     beforeAll(async () => {
       // 创建并登录普通用户
       const normalUser = {
         username: `normaluser_${Date.now()}`,
-        password: 'password123',
+        password: "password123",
         email: `normaluser_${Date.now()}@example.com`,
       };
 
       await request(app.getHttpServer())
-        .post('/api/auth/register')
+        .post("/api/auth/register")
         .send(normalUser);
 
       const res = await request(app.getHttpServer())
-        .post('/api/auth/login')
+        .post("/api/auth/login")
         .send({
           username: normalUser.username,
           password: normalUser.password,
@@ -595,38 +595,38 @@ describe('App (e2e)', () => {
       }
     });
 
-    it('should deny normal user access to user list', async () => {
+    it("should deny normal user access to user list", async () => {
       if (!normalUserToken) {
-        console.log('Skipping permission test - normal user not available');
+        console.log("Skipping permission test - normal user not available");
         return;
       }
 
       return request(app.getHttpServer())
-        .get('/api/users')
-        .set('Authorization', `Bearer ${normalUserToken}`)
+        .get("/api/users")
+        .set("Authorization", `Bearer ${normalUserToken}`)
         .expect(403);
     });
 
-    it('should deny normal user access to create user', async () => {
+    it("should deny normal user access to create user", async () => {
       if (!normalUserToken) return;
 
       return request(app.getHttpServer())
-        .post('/api/users')
-        .set('Authorization', `Bearer ${normalUserToken}`)
+        .post("/api/users")
+        .set("Authorization", `Bearer ${normalUserToken}`)
         .send({
-          username: 'newuser',
-          password: 'password123',
-          email: 'new@example.com',
+          username: "newuser",
+          password: "password123",
+          email: "new@example.com",
         })
         .expect(403);
     });
 
-    it('should deny normal user access to logs', async () => {
+    it("should deny normal user access to logs", async () => {
       if (!normalUserToken) return;
 
       return request(app.getHttpServer())
-        .get('/api/logs')
-        .set('Authorization', `Bearer ${normalUserToken}`)
+        .get("/api/logs")
+        .set("Authorization", `Bearer ${normalUserToken}`)
         .expect(403);
     });
   });

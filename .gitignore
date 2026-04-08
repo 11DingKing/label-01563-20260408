@@ -36,6 +36,7 @@ backend/coverage/
 backend/.nyc_output/
 backend/.env
 backend/.env.local
+backend/uploads/
 
 # ==================== Docker ====================
 # Docker 数据卷（如果有本地挂载）

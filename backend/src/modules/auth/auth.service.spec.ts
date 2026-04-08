@@ -1,18 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { UnauthorizedException, BadRequestException } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UserService } from '../user/user.service';
-import { User } from '../user/entities/user.entity';
-import { RefreshToken } from './entities/refresh-token.entity';
+import { Test, TestingModule } from "@nestjs/testing";
+import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { UnauthorizedException, BadRequestException } from "@nestjs/common";
+import { AuthService } from "./auth.service";
+import { UserService } from "../user/user.service";
+import { User } from "../user/entities/user.entity";
+import { RefreshToken } from "./entities/refresh-token.entity";
 
-jest.mock('uuid', () => ({
-  v4: () => 'mock-uuid-v4',
+jest.mock("uuid", () => ({
+  v4: () => "mock-uuid-v4",
 }));
 
-describe('AuthService', () => {
+describe("AuthService", () => {
   let service: AuthService;
   let userService: jest.Mocked<UserService>;
   let jwtService: jest.Mocked<JwtService>;
@@ -21,11 +21,11 @@ describe('AuthService', () => {
     const user = new User();
     Object.assign(user, {
       id: 1,
-      username: 'testuser',
-      password: '$2a$10$hashedpassword',
-      email: 'test@example.com',
-      nickname: 'Test User',
-      avatar: '',
+      username: "testuser",
+      password: "$2a$10$hashedpassword",
+      email: "test@example.com",
+      nickname: "Test User",
+      avatar: "",
       status: 1,
       role: 0,
       loginAttempts: 0,
@@ -55,7 +55,7 @@ describe('AuthService', () => {
     };
 
     const mockConfigService = {
-      get: jest.fn().mockReturnValue('test-secret'),
+      get: jest.fn().mockReturnValue("test-secret"),
     };
 
     const mockRefreshTokenRepository = {
@@ -85,16 +85,16 @@ describe('AuthService', () => {
     jwtService = module.get(JwtService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  describe('register', () => {
-    it('should create a new user successfully', async () => {
+  describe("register", () => {
+    it("should create a new user successfully", async () => {
       const registerDto = {
-        username: 'newuser',
-        password: 'password123',
-        email: 'new@example.com',
+        username: "newuser",
+        password: "password123",
+        email: "new@example.com",
       };
 
       const newUser = createMockUser({
@@ -115,14 +115,14 @@ describe('AuthService', () => {
     });
   });
 
-  describe('login', () => {
-    it('should return user and tokens on successful login', async () => {
-      const loginDto = { username: 'testuser', password: 'password123' };
+  describe("login", () => {
+    it("should return user and tokens on successful login", async () => {
+      const loginDto = { username: "testuser", password: "password123" };
 
       userService.findByUsername.mockResolvedValue(mockUser);
       userService.validatePassword.mockResolvedValue(true);
       userService.update.mockResolvedValue(mockUser);
-      jwtService.sign.mockReturnValue('jwt-token');
+      jwtService.sign.mockReturnValue("jwt-token");
 
       const result = await service.login(loginDto);
 
@@ -130,8 +130,8 @@ describe('AuthService', () => {
       expect(result.tokens).toBeDefined();
     });
 
-    it('should throw UnauthorizedException when user not found', async () => {
-      const loginDto = { username: 'nonexistent', password: 'password' };
+    it("should throw UnauthorizedException when user not found", async () => {
+      const loginDto = { username: "nonexistent", password: "password" };
 
       userService.findByUsername.mockResolvedValue(null);
 
@@ -140,8 +140,8 @@ describe('AuthService', () => {
       );
     });
 
-    it('should throw UnauthorizedException when user is disabled', async () => {
-      const loginDto = { username: 'testuser', password: 'password123' };
+    it("should throw UnauthorizedException when user is disabled", async () => {
+      const loginDto = { username: "testuser", password: "password123" };
       const disabledUser = createMockUser({ status: 0 });
 
       userService.findByUsername.mockResolvedValue(disabledUser);
@@ -151,8 +151,8 @@ describe('AuthService', () => {
       );
     });
 
-    it('should throw UnauthorizedException when password is invalid', async () => {
-      const loginDto = { username: 'testuser', password: 'wrongpassword' };
+    it("should throw UnauthorizedException when password is invalid", async () => {
+      const loginDto = { username: "testuser", password: "wrongpassword" };
 
       userService.findByUsername.mockResolvedValue(mockUser);
       userService.validatePassword.mockResolvedValue(false);
@@ -164,8 +164,8 @@ describe('AuthService', () => {
     });
   });
 
-  describe('getProfile', () => {
-    it('should return user profile', async () => {
+  describe("getProfile", () => {
+    it("should return user profile", async () => {
       userService.findOne.mockResolvedValue(mockUser);
 
       const result = await service.getProfile(1);
@@ -175,25 +175,25 @@ describe('AuthService', () => {
     });
   });
 
-  describe('updateProfile', () => {
-    it('should update user profile', async () => {
-      const updateDto = { nickname: 'Updated Name' };
-      const updatedUser = createMockUser({ nickname: 'Updated Name' });
+  describe("updateProfile", () => {
+    it("should update user profile", async () => {
+      const updateDto = { nickname: "Updated Name" };
+      const updatedUser = createMockUser({ nickname: "Updated Name" });
 
       userService.update.mockResolvedValue(updatedUser);
 
       const result = await service.updateProfile(1, updateDto);
 
-      expect(result.nickname).toBe('Updated Name');
+      expect(result.nickname).toBe("Updated Name");
       expect(userService.update).toHaveBeenCalledWith(1, updateDto);
     });
   });
 
-  describe('updatePassword', () => {
-    it('should update password successfully', async () => {
+  describe("updatePassword", () => {
+    it("should update password successfully", async () => {
       const updateDto = {
-        oldPassword: 'oldpassword',
-        newPassword: 'newpassword',
+        oldPassword: "oldpassword",
+        newPassword: "newpassword",
       };
 
       userService.findOne.mockResolvedValue(mockUser);
@@ -204,10 +204,10 @@ describe('AuthService', () => {
       expect(userService.update).toHaveBeenCalled();
     });
 
-    it('should throw BadRequestException when old password is incorrect', async () => {
+    it("should throw BadRequestException when old password is incorrect", async () => {
       const updateDto = {
-        oldPassword: 'wrongpassword',
-        newPassword: 'newpassword',
+        oldPassword: "wrongpassword",
+        newPassword: "newpassword",
       };
 
       userService.findOne.mockResolvedValue(mockUser);

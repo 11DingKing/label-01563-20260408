@@ -3,15 +3,16 @@ import {
   NotFoundException,
   ConflictException,
   Logger,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
-import * as bcrypt from 'bcryptjs';
-import { User } from './entities/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto, UpdateStatusDto } from './dto/update-user.dto';
-import { QueryUserDto } from './dto/query-user.dto';
-import { PaginatedResult } from '../../common/dto/pagination.dto';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository, Like } from "typeorm";
+import * as bcrypt from "bcryptjs";
+import { User } from "./entities/user.entity";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto, UpdateStatusDto } from "./dto/update-user.dto";
+import { QueryUserDto } from "./dto/query-user.dto";
+import { PaginatedResult } from "../../common/dto/pagination.dto";
+import { FileService } from "../file/file.service";
 
 @Injectable()
 export class UserService {
@@ -20,6 +21,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly fileService: FileService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -33,9 +35,9 @@ export class UserService {
 
     if (existingUser) {
       if (existingUser.username === createUserDto.username) {
-        throw new ConflictException('用户名已存在');
+        throw new ConflictException("用户名已存在");
       }
-      throw new ConflictException('邮箱已被注册');
+      throw new ConflictException("邮箱已被注册");
     }
 
     // 密码加密
@@ -74,7 +76,7 @@ export class UserService {
       where,
       skip: (page - 1) * pageSize,
       take: pageSize,
-      order: { createdAt: 'DESC' },
+      order: { createdAt: "DESC" },
     });
 
     return new PaginatedResult(users, total, page, pageSize);
@@ -105,7 +107,7 @@ export class UserService {
     if (updateUserDto.username && updateUserDto.username !== user.username) {
       const existing = await this.findByUsername(updateUserDto.username);
       if (existing) {
-        throw new ConflictException('用户名已存在');
+        throw new ConflictException("用户名已存在");
       }
     }
 
@@ -113,7 +115,7 @@ export class UserService {
     if (updateUserDto.email && updateUserDto.email !== user.email) {
       const existing = await this.findByEmail(updateUserDto.email);
       if (existing) {
-        throw new ConflictException('邮箱已被注册');
+        throw new ConflictException("邮箱已被注册");
       }
     }
 
@@ -129,12 +131,17 @@ export class UserService {
     return updatedUser;
   }
 
-  async updateStatus(id: number, updateStatusDto: UpdateStatusDto): Promise<User> {
+  async updateStatus(
+    id: number,
+    updateStatusDto: UpdateStatusDto,
+  ): Promise<User> {
     const user = await this.findOne(id);
     user.status = updateStatusDto.status;
-    
+
     const updatedUser = await this.userRepository.save(user);
-    this.logger.log(`用户状态更新: ${user.username} -> ${updateStatusDto.status}`);
+    this.logger.log(
+      `用户状态更新: ${user.username} -> ${updateStatusDto.status}`,
+    );
 
     return updatedUser;
   }
@@ -150,5 +157,40 @@ export class UserService {
     hashedPassword: string,
   ): Promise<boolean> {
     return bcrypt.compare(plainPassword, hashedPassword);
+  }
+
+  async updateAvatar(id: number, filename: string): Promise<User> {
+    const user = await this.findOne(id);
+    const avatarUrl = this.fileService.getAvatarUrl(filename);
+
+    if (user.avatar) {
+      const oldFilename = this.fileService.extractFilenameFromUrl(user.avatar);
+      if (oldFilename) {
+        this.fileService.deleteAvatar(oldFilename);
+      }
+    }
+
+    user.avatar = avatarUrl;
+    const updatedUser = await this.userRepository.save(user);
+    this.logger.log(`用户头像更新成功: ${updatedUser.username}`);
+
+    return updatedUser;
+  }
+
+  async deleteAvatar(id: number): Promise<User> {
+    const user = await this.findOne(id);
+
+    if (user.avatar) {
+      const filename = this.fileService.extractFilenameFromUrl(user.avatar);
+      if (filename) {
+        this.fileService.deleteAvatar(filename);
+      }
+      user.avatar = null;
+      const updatedUser = await this.userRepository.save(user);
+      this.logger.log(`用户头像删除成功: ${updatedUser.username}`);
+      return updatedUser;
+    }
+
+    return user;
   }
 }

@@ -11,7 +11,7 @@ export class ResponseDto<T> {
     this.timestamp = new Date().toISOString();
   }
 
-  static success<T>(data: T, message = 'Success'): ResponseDto<T> {
+  static success<T>(data: T, message = "Success"): ResponseDto<T> {
     return new ResponseDto(0, message, data);
   }
 

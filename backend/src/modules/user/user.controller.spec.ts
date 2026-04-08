@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserController } from './user.controller';
-import { UserService } from './user.service';
-import { User } from './entities/user.entity';
+import { Test, TestingModule } from "@nestjs/testing";
+import { UserController } from "./user.controller";
+import { UserService } from "./user.service";
+import { User } from "./entities/user.entity";
 
-describe('UserController', () => {
+describe("UserController", () => {
   let controller: UserController;
   let userService: jest.Mocked<UserService>;
 
@@ -11,11 +11,11 @@ describe('UserController', () => {
     const user = new User();
     Object.assign(user, {
       id: 1,
-      username: 'testuser',
-      password: '$2a$10$hashedpassword',
-      email: 'test@example.com',
-      nickname: 'Test User',
-      avatar: '',
+      username: "testuser",
+      password: "$2a$10$hashedpassword",
+      email: "test@example.com",
+      nickname: "Test User",
+      avatar: "",
       status: 1,
       role: 0,
       loginAttempts: 0,
@@ -50,16 +50,16 @@ describe('UserController', () => {
     userService = module.get(UserService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 
-  describe('create', () => {
-    it('should create a new user', async () => {
+  describe("create", () => {
+    it("should create a new user", async () => {
       const createDto = {
-        username: 'newuser',
-        password: 'password123',
-        email: 'new@example.com',
+        username: "newuser",
+        password: "password123",
+        email: "new@example.com",
       };
 
       const newUser = createMockUser({
@@ -76,8 +76,8 @@ describe('UserController', () => {
     });
   });
 
-  describe('findAll', () => {
-    it('should return paginated users', async () => {
+  describe("findAll", () => {
+    it("should return paginated users", async () => {
       const paginatedResult = {
         data: [mockUser],
         total: 1,
@@ -96,8 +96,8 @@ describe('UserController', () => {
     });
   });
 
-  describe('findOne', () => {
-    it('should return a user by id', async () => {
+  describe("findOne", () => {
+    it("should return a user by id", async () => {
       userService.findOne.mockResolvedValue(mockUser);
 
       const result = await controller.findOne(1);
@@ -107,22 +107,22 @@ describe('UserController', () => {
     });
   });
 
-  describe('update', () => {
-    it('should update a user', async () => {
-      const updateDto = { nickname: 'Updated Name' };
-      const updatedUser = createMockUser({ nickname: 'Updated Name' });
+  describe("update", () => {
+    it("should update a user", async () => {
+      const updateDto = { nickname: "Updated Name" };
+      const updatedUser = createMockUser({ nickname: "Updated Name" });
 
       userService.update.mockResolvedValue(updatedUser);
 
       const result = await controller.update(1, updateDto);
 
-      expect(result.nickname).toBe('Updated Name');
+      expect(result.nickname).toBe("Updated Name");
       expect(userService.update).toHaveBeenCalledWith(1, updateDto);
     });
   });
 
-  describe('updateStatus', () => {
-    it('should update user status', async () => {
+  describe("updateStatus", () => {
+    it("should update user status", async () => {
       const statusDto = { status: 0 };
       const updatedUser = createMockUser({ status: 0 });
 
@@ -135,8 +135,8 @@ describe('UserController', () => {
     });
   });
 
-  describe('remove', () => {
-    it('should remove a user', async () => {
+  describe("remove", () => {
+    it("should remove a user", async () => {
       userService.remove.mockResolvedValue(undefined);
 
       await expect(controller.remove(1)).resolves.not.toThrow();

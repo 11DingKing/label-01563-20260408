@@ -1,9 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, Between, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
-import { OperationLog } from './entities/operation-log.entity';
-import { QueryLogDto } from './dto/query-log.dto';
-import { PaginatedResult } from '../../common/dto/pagination.dto';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import {
+  Repository,
+  Like,
+  Between,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+} from "typeorm";
+import { OperationLog } from "./entities/operation-log.entity";
+import { QueryLogDto } from "./dto/query-log.dto";
+import { PaginatedResult } from "../../common/dto/pagination.dto";
 
 export interface CreateLogDto {
   userId?: number;
@@ -44,40 +50,40 @@ export class LogService {
       endDate,
     } = queryDto;
 
-    const queryBuilder = this.logRepository.createQueryBuilder('log');
+    const queryBuilder = this.logRepository.createQueryBuilder("log");
 
     if (username) {
-      queryBuilder.andWhere('log.username LIKE :username', {
+      queryBuilder.andWhere("log.username LIKE :username", {
         username: `%${username}%`,
       });
     }
 
     if (module) {
-      queryBuilder.andWhere('log.module = :module', { module });
+      queryBuilder.andWhere("log.module = :module", { module });
     }
 
     if (action) {
-      queryBuilder.andWhere('log.action = :action', { action });
+      queryBuilder.andWhere("log.action = :action", { action });
     }
 
     if (status !== undefined) {
-      queryBuilder.andWhere('log.status = :status', { status });
+      queryBuilder.andWhere("log.status = :status", { status });
     }
 
     if (startDate) {
-      queryBuilder.andWhere('log.createdAt >= :startDate', {
+      queryBuilder.andWhere("log.createdAt >= :startDate", {
         startDate: new Date(startDate),
       });
     }
 
     if (endDate) {
-      queryBuilder.andWhere('log.createdAt <= :endDate', {
-        endDate: new Date(endDate + ' 23:59:59'),
+      queryBuilder.andWhere("log.createdAt <= :endDate", {
+        endDate: new Date(endDate + " 23:59:59"),
       });
     }
 
     queryBuilder
-      .orderBy('log.createdAt', 'DESC')
+      .orderBy("log.createdAt", "DESC")
       .skip((page - 1) * pageSize)
       .take(pageSize);
 

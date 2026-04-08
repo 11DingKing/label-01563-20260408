@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { User } from '../user/entities/user.entity';
+import { Test, TestingModule } from "@nestjs/testing";
+import { AuthController } from "./auth.controller";
+import { AuthService } from "./auth.service";
+import { User } from "../user/entities/user.entity";
 
-describe('AuthController', () => {
+describe("AuthController", () => {
   let controller: AuthController;
   let authService: jest.Mocked<AuthService>;
 
@@ -11,11 +11,11 @@ describe('AuthController', () => {
     const user = new User();
     Object.assign(user, {
       id: 1,
-      username: 'testuser',
-      password: '$2a$10$hashedpassword',
-      email: 'test@example.com',
-      nickname: 'Test User',
-      avatar: '',
+      username: "testuser",
+      password: "$2a$10$hashedpassword",
+      email: "test@example.com",
+      nickname: "Test User",
+      avatar: "",
       status: 1,
       role: 0,
       loginAttempts: 0,
@@ -32,8 +32,8 @@ describe('AuthController', () => {
   const mockUser = createMockUser();
 
   const mockTokens = {
-    accessToken: 'jwt-access-token',
-    refreshToken: 'jwt-refresh-token',
+    accessToken: "jwt-access-token",
+    refreshToken: "jwt-refresh-token",
     expiresIn: 900,
   };
 
@@ -57,16 +57,16 @@ describe('AuthController', () => {
     authService = module.get(AuthService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 
-  describe('register', () => {
-    it('should register a new user', async () => {
+  describe("register", () => {
+    it("should register a new user", async () => {
       const registerDto = {
-        username: 'newuser',
-        password: 'password123',
-        email: 'new@example.com',
+        username: "newuser",
+        password: "password123",
+        email: "new@example.com",
       };
 
       const newUser = createMockUser({
@@ -86,9 +86,9 @@ describe('AuthController', () => {
     });
   });
 
-  describe('login', () => {
-    it('should return access token and user info', async () => {
-      const loginDto = { username: 'testuser', password: 'password123' };
+  describe("login", () => {
+    it("should return access token and user info", async () => {
+      const loginDto = { username: "testuser", password: "password123" };
 
       authService.login.mockResolvedValue({
         user: mockUser,
@@ -96,12 +96,12 @@ describe('AuthController', () => {
       });
 
       const mockRequest = {
-        headers: { 'user-agent': 'test-agent' },
+        headers: { "user-agent": "test-agent" },
       };
 
       const result = await controller.login(
         loginDto,
-        '127.0.0.1',
+        "127.0.0.1",
         mockRequest as any,
       );
 
@@ -111,8 +111,8 @@ describe('AuthController', () => {
     });
   });
 
-  describe('getProfile', () => {
-    it('should return user profile', async () => {
+  describe("getProfile", () => {
+    it("should return user profile", async () => {
       authService.getProfile.mockResolvedValue(mockUser);
 
       const result = await controller.getProfile(mockUser);
@@ -121,41 +121,41 @@ describe('AuthController', () => {
     });
   });
 
-  describe('updateProfile', () => {
-    it('should update user profile', async () => {
-      const updateDto = { nickname: 'Updated Name' };
-      const updatedUser = createMockUser({ nickname: 'Updated Name' });
+  describe("updateProfile", () => {
+    it("should update user profile", async () => {
+      const updateDto = { nickname: "Updated Name" };
+      const updatedUser = createMockUser({ nickname: "Updated Name" });
 
       authService.updateProfile.mockResolvedValue(updatedUser);
 
       const result = await controller.updateProfile(mockUser, updateDto);
 
-      expect(result.nickname).toBe('Updated Name');
+      expect(result.nickname).toBe("Updated Name");
     });
   });
 
-  describe('updatePassword', () => {
-    it('should update password', async () => {
+  describe("updatePassword", () => {
+    it("should update password", async () => {
       const updateDto = {
-        oldPassword: 'oldpassword',
-        newPassword: 'newpassword',
+        oldPassword: "oldpassword",
+        newPassword: "newpassword",
       };
 
       authService.updatePassword.mockResolvedValue();
 
       const result = await controller.updatePassword(mockUser, updateDto);
 
-      expect(result.message).toBe('密码修改成功，请重新登录');
+      expect(result.message).toBe("密码修改成功，请重新登录");
     });
   });
 
-  describe('logout', () => {
-    it('should return logout success message', async () => {
+  describe("logout", () => {
+    it("should return logout success message", async () => {
       authService.logout.mockResolvedValue();
 
       const result = await controller.logout(mockUser, undefined);
 
-      expect(result.message).toBe('退出登录成功');
+      expect(result.message).toBe("退出登录成功");
     });
   });
 });

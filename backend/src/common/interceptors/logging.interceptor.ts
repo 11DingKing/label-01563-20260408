@@ -4,12 +4,12 @@ import {
   ExecutionContext,
   CallHandler,
   Inject,
-} from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { Request, Response } from 'express';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { Logger } from 'winston';
+} from "@nestjs/common";
+import { Observable } from "rxjs";
+import { tap } from "rxjs/operators";
+import { Request, Response } from "express";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import { Logger } from "winston";
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -20,7 +20,7 @@ export class LoggingInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const request = context.switchToHttp().getRequest<Request>();
     const { method, url, ip, body, query, params } = request;
-    const userAgent = request.get('user-agent') || '';
+    const userAgent = request.get("user-agent") || "";
     const startTime = Date.now();
     const requestId = this.generateRequestId();
 
@@ -31,7 +31,7 @@ export class LoggingInterceptor implements NestInterceptor {
 
     // 记录请求开始
     this.logger.info(`[${requestId}] --> ${method} ${url}`, {
-      context: 'HTTP',
+      context: "HTTP",
       requestId,
       method,
       url,
@@ -55,7 +55,7 @@ export class LoggingInterceptor implements NestInterceptor {
           this.logger.info(
             `[${requestId}] <-- ${method} ${url} ${statusCode} ${duration}ms`,
             {
-              context: 'HTTP',
+              context: "HTTP",
               requestId,
               method,
               url,
@@ -72,7 +72,7 @@ export class LoggingInterceptor implements NestInterceptor {
             this.logger.warn(
               `[${requestId}] 慢请求警告: ${method} ${url} 耗时 ${duration}ms`,
               {
-                context: 'Performance',
+                context: "Performance",
                 requestId,
                 method,
                 url,
@@ -88,7 +88,7 @@ export class LoggingInterceptor implements NestInterceptor {
           this.logger.error(
             `[${requestId}] <-- ${method} ${url} ${statusCode} ${duration}ms - ${error.message}`,
             {
-              context: 'HTTP',
+              context: "HTTP",
               requestId,
               method,
               url,
@@ -112,16 +112,23 @@ export class LoggingInterceptor implements NestInterceptor {
 
   private sanitizeBody(body: any): any {
     if (!body) return body;
-    
-    const sensitiveFields = ['password', 'oldPassword', 'newPassword', 'confirmPassword', 'token', 'accessToken'];
+
+    const sensitiveFields = [
+      "password",
+      "oldPassword",
+      "newPassword",
+      "confirmPassword",
+      "token",
+      "accessToken",
+    ];
     const sanitized = { ...body };
-    
+
     for (const field of sensitiveFields) {
       if (sanitized[field]) {
-        sanitized[field] = '***REDACTED***';
+        sanitized[field] = "***REDACTED***";
       }
     }
-    
+
     return sanitized;
   }
 }

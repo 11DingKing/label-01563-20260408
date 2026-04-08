@@ -7,7 +7,7 @@ import {
   IsInt,
   Min,
   Max,
-} from 'class-validator';
+} from "class-validator";
 
 export class CreateUserDto {
   @IsString()

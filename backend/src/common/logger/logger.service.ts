@@ -1,6 +1,10 @@
-import { Injectable, Inject, LoggerService as NestLoggerService } from '@nestjs/common';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { Logger } from 'winston';
+import {
+  Injectable,
+  Inject,
+  LoggerService as NestLoggerService,
+} from "@nestjs/common";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import { Logger } from "winston";
 
 @Injectable()
 export class AppLoggerService implements NestLoggerService {
@@ -30,26 +34,26 @@ export class AppLoggerService implements NestLoggerService {
 
   // 自定义方法：记录 HTTP 请求
   http(message: string, meta?: Record<string, unknown>) {
-    this.logger.info(message, { context: 'HTTP', ...meta });
+    this.logger.info(message, { context: "HTTP", ...meta });
   }
 
   // 自定义方法：记录数据库操作
   database(message: string, meta?: Record<string, unknown>) {
-    this.logger.info(message, { context: 'Database', ...meta });
+    this.logger.info(message, { context: "Database", ...meta });
   }
 
   // 自定义方法：记录业务操作
   business(message: string, meta?: Record<string, unknown>) {
-    this.logger.info(message, { context: 'Business', ...meta });
+    this.logger.info(message, { context: "Business", ...meta });
   }
 
   // 自定义方法：记录安全事件
   security(message: string, meta?: Record<string, unknown>) {
-    this.logger.warn(message, { context: 'Security', ...meta });
+    this.logger.warn(message, { context: "Security", ...meta });
   }
 
   // 自定义方法：记录性能指标
   performance(message: string, meta?: Record<string, unknown>) {
-    this.logger.info(message, { context: 'Performance', ...meta });
+    this.logger.info(message, { context: "Performance", ...meta });
   }
 }
